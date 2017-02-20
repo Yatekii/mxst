@@ -1,0 +1,119 @@
+\documentclass[10pt,landscape]{article}
+\usepackage{multicol}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage[landscape]{geometry}
+\usepackage{hyperref}
+
+\usepackage{tikz}
+\usepackage{amsmath}
+\usetikzlibrary{arrows}
+\usepackage{float}
+\usetikzlibrary{shapes}
+\usetikzlibrary{intersections}
+\usepackage{circuitikz}
+
+% This sets page margins to .5 inch if using letter paper, and to 1cm
+% if using A4 paper. (This probably isn't strictly necessary.)
+% If using another size paper, use default 1cm margins.
+\ifthenelse{\lengthtest { \paperwidth = 11in}}
+	{ \geometry{top=.5in,left=.5in,right=.5in,bottom=.5in} }
+	{\ifthenelse{ \lengthtest{ \paperwidth = 297mm}}
+		{\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+		{\geometry{top=1cm,left=1cm,right=1cm,bottom=1cm} }
+	}
+
+% Turn off header and footer
+\pagestyle{empty}
+ 
+
+% Redefine section commands to use less space
+\makeatletter
+\renewcommand{\section}{\@startsection{section}{1}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%x
+                                {\normalfont\large\bfseries}}
+\renewcommand{\subsection}{\@startsection{subsection}{2}{0mm}%
+                                {-1explus -.5ex minus -.2ex}%
+                                {0.5ex plus .2ex}%
+                                {\normalfont\normalsize\bfseries}}
+\renewcommand{\subsubsection}{\@startsection{subsubsection}{3}{0mm}%
+                                {-1ex plus -.5ex minus -.2ex}%
+                                {1ex plus .2ex}%
+                                {\normalfont\small\bfseries}}
+\makeatother
+
+% Define BibTeX command
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+% Don't print section numbers
+\setcounter{secnumdepth}{0}
+
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt plus 0.5ex}
+
+
+% -----------------------------------------------------------------------
+
+\begin{document}
+
+\raggedright
+\footnotesize
+\begin{multicols}{2}
+
+% multicol parameters
+% These lengths are set only within the two main columns
+%\setlength{\columnseprule}{0.25pt}
+\setlength{\premulticols}{1pt}
+\setlength{\postmulticols}{1pt}
+\setlength{\multicolsep}{1pt}
+\setlength{\columnsep}{2pt}
+
+\section{Data Conversion Chain | 20-02-2017}
+
+\begin{figure}[H]
+    \begin{center}
+        \tikzset{font={\fontsize{8pt}{12}\selectfont}}
+        \begin{circuitikz}[x=0.021\linewidth,y=0.021\linewidth]
+
+        \draw[name path=chain]
+           (0,0) node[above]{$V_{in}$} to[short,o-] ++(0.2, 0)
+           to[lowpass,->] ++(6,0)
+           to[twoport,t=S\&H] ++(6,0)
+           to[adc] ++(6,0)
+           to[dsp] ++(6,0)
+           to[dac] ++(6,0)
+           to[lowpass] ++(6,0)
+           to[short,-o] ++(0.2,0) node[above]{$V_{out}$};
+
+        \draw[name path=sndr]
+        (36.4,-0.5) to[short] ++(0, -0.5) to[short] ++(3, 0) to[short]
+        ++(0,-4) node[draw,below]{SNDR} ++(0, -3) node[align=center]{signal to noise \\ and distortion ratio};
+
+        \draw[name path=cd,dashed] (9.2,-6) node[above,rotate=90]{continuous} node[below,rotate=90]{discrete}
+        -- (9.2,6) node{};
+
+        \draw[name path=ad,dashed] (15.2,-6) node[above,rotate=90]{analog} node[below,rotate=90]{digital}
+        -- (15.2,6) node{};
+
+        \draw[name path=da,dashed] (27.2,-6) node[above,rotate=90]{digital} node[below,rotate=90]{analog}
+        -- (27.2,6) node{};
+
+        \draw[name path=dc,dashed] (33.2,-6) node[above,rotate=90]{discrete} node[below,rotate=90]{continuous}
+        -- (33.2,6) node{};
+
+        \end{circuitikz}
+    \end{center}
+    \caption{A typical signal chain}
+    \label{fig:chain}
+\end{figure}
+
+\rule{0.3\linewidth}{0.25pt}
+\scriptsize
+
+Copyright \copyright\ 2017 Noah Huesser
+
+\end{multicols}
+\end{document}
