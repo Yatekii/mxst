@@ -123,11 +123,26 @@
 \end{figure}
 
 \subsubsection[chain1DSP]{\circled{1} DSP}
+The equivalent ouput voltage can be expressed with \ref{eq:eq_vtg}. It's maximum can be described with \ref{eq:eq_vtg_max}
+\begin{equation}
+    V_{eq} = V_{ref} \Big(\sum^N_{i=1}b_i 2^{-i}\Big)
+    \label{eq:eq_vtg}
+\end{equation}
+\begin{equation}
+    V_{eq} = V_{ref}\Big(1 - 2^{-N}\Big)
+    \label{eq:eq_vtg_max}
+\end{equation}
+
+This is a representation in UINT. In most realworld impelemntations INT using 2's complement is required. Sometimes if there is peak currents, Gray-Code is to be used to minimize peak currents!
+
+The quantizer-error is defined with equation \ref{eq:quantizer_err}.
 \subsubsection[chain2DA]{\circled{2} D/A}
 \subsubsection[chain3AD]{\circled{3} A/D}
 \subsubsection[chain4SH]{\circled{4} S\&H}
 \subsubsection[chain56LP]{\circled{5}\circled{6} LP}
-
+\par
+\vspace*{\fill}
+\par
 \rule{0.3\linewidth}{0.25pt}
 \scriptsize
 
