@@ -13,6 +13,9 @@
 \usetikzlibrary{intersections}
 \usepackage{circuitikz}
 
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+            \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
+
 % This sets page margins to .5 inch if using letter paper, and to 1cm
 % if using A4 paper. (This probably isn't strictly necessary.)
 % If using another size paper, use default 1cm margins.
@@ -88,6 +91,15 @@
            to[lowpass] ++(6,0)
            to[short,-o] ++(0.2,0) node[above]{$V_{out}$};
 
+        \path[name path=labels]
+           (0,-10) -- ++(3.2, 0) node[draw,shape=circle]{5}
+           -- ++(6,0) node[draw,shape=circle]{4}
+           -- ++(6,0) node[draw,shape=circle]{3}
+           -- ++(6,0) node[draw,shape=circle]{1}
+           -- ++(6,0) node[draw,shape=circle]{2}
+           -- ++(6,0) node[draw,shape=circle]{6}
+           -- ++(6,0);
+
         \draw[name path=sndr]
         (36.4,-0.5) to[short] ++(0, -0.5) to[short] ++(3, 0) to[short]
         ++(0,-4) node[draw,below]{SNDR} ++(0, -3) node[align=center]{signal to noise \\ and distortion ratio};
@@ -109,6 +121,13 @@
     \caption{A typical signal chain}
     \label{fig:chain}
 \end{figure}
+
+\textbf{\circled{1} DSP} \\
+\textbf{\circled{2} D/A} \\
+\textbf{\circled{3} A/D} \\
+\textbf{\circled{4} S \& H} \\
+\textbf{\circled{5} LP} \\
+\textbf{\circled{6} LP} \\
 
 \rule{0.3\linewidth}{0.25pt}
 \scriptsize
