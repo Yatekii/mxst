@@ -14,6 +14,7 @@
 \usepackage{circuitikz}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.13}
+\usepackage{graphicx}
 
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
             \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
@@ -146,25 +147,67 @@ The quantizer-error is defined with equation \ref{eq:quantizer_err}.
 
 Since the quantizer error has the probability density function of white noise\footnote{White noise means that the noise has the same amplitude for every frequency.}, it can be depicted with the function seen in \ref{fig:prob_dens_func_quantizer}.
 
-\begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
-    \begin{axis}[
-        samples=100,
-        const plot mark mid,
-        scaled ticks = false,
-        ymin=0,ymax=0.5,
-        xmin=-3,xmax=3,
-        xtick={-2,2},
-        xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$}],
-        ytick={0.25},
-        yticklabels={$\frac{1}{LSB}$}]
-        \addplot [very thick, orange] {unipdf(x,-2,2)};
-    \end{axis}
-\end{tikzpicture}
-
 \begin{figure}
-    
+    \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+        \begin{axis}[
+            samples=100,
+            const plot mark mid,
+            scaled ticks = false,
+            ymin=0,ymax=0.5,
+            xmin=-3,xmax=3,
+            xtick={-2,2},
+            xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$},
+            ytick={0.25},
+            yticklabels={$\frac{1}{LSB}$}]
+            \addplot [very thick, orange] {unipdf(x,-2,2)};
+        \end{axis}
+    \end{tikzpicture}
     \caption{A typical signal chain}
     \label{fig:prob_dens_func_quantizer}
+\end{figure}
+
+The white noise is assumed because the digital signal is a sequence of pulses. If this is fouriertransformed a constant spectral density is received.
+
+\begin{figure}[!htb]
+    \centering
+    \begin{minipage}{.5\textwidth}
+        \centering
+        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+            \begin{axis}[
+                samples=100,
+                const plot mark mid,
+                scaled ticks = false,
+                ymin=0,ymax=0.5,
+                xmin=-3,xmax=3,
+                xtick={-2,2},
+                xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$}],
+                ytick={0.25},
+                yticklabels={$\frac{1}{LSB}$}]
+                \addplot [very thick, orange] {unipdf(x,-2,2)};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{$dt=0.1$}
+        \label{fig:prob1_6_2}
+    \end{minipage}%
+    \begin{minipage}{0.5\textwidth}
+        \centering
+        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+            \begin{axis}[
+                samples=100,
+                const plot mark mid,
+                scaled ticks = false,
+                ymin=0,ymax=0.5,
+                xmin=-3,xmax=3,
+                xtick={-2,2},
+                xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$}],
+                ytick={0.25},
+                yticklabels={$\frac{1}{LSB}$}]
+                \addplot [very thick, orange] {unipdf(x,-2,2)};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{$dt =$}
+        \label{fig:prob1_6_1}
+    \end{minipage}
 \end{figure}
 
 \subsubsection[chain2DA]{\circled{2} D/A}
