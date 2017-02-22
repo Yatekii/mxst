@@ -4,6 +4,7 @@
 \usepackage{ifthen}
 \usepackage[landscape]{geometry}
 \usepackage{hyperref}
+\usepackage{float}
 
 \usepackage{tikz}
 \usepackage{amsmath}
@@ -147,7 +148,8 @@ The quantizer-error is defined with equation \ref{eq:quantizer_err}.
 
 Since the quantizer error has the probability density function of white noise\footnote{White noise means that the noise has the same amplitude for every frequency.}, it can be depicted with the function seen in \ref{fig:prob_dens_func_quantizer}.
 
-\begin{figure}
+\begin{figure}[H]
+    \centering
     \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
         \begin{axis}[
             samples=100,
@@ -162,7 +164,7 @@ Since the quantizer error has the probability density function of white noise\fo
             \addplot [very thick, orange] {unipdf(x,-2,2)};
         \end{axis}
     \end{tikzpicture}
-    \caption{A typical signal chain}
+    \caption{Probability density function of the quatizer error}
     \label{fig:prob_dens_func_quantizer}
 \end{figure}
 
