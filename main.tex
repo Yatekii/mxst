@@ -17,6 +17,7 @@
 \pgfplotsset{compat=1.13}
 \usepackage{graphicx}
 \usepackage{trfsigns}
+\usepackage{array}
 
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
             \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
@@ -33,6 +34,8 @@
 
 % Turn off header and footer
 \pagestyle{empty}
+
+\def\arraystretch{5}
  
 
 % Redefine section commands to use less space
@@ -89,11 +92,11 @@
         \draw[name path=chain]
            (0,0) node[above]{$V_{in}$} to[short,o-] ++(0.2, 0)
            to[lowpass,->] ++(6,0)
-           to[twoport,t=S\&H] ++(6,0)
-           to[adc] ++(6,0)
+           to[twoport,t=S\&H,n=nsh] ++(6,0)
+           to[adc,n=nad] ++(6,0)
            to[dsp] ++(6,0)
-           to[dac] ++(6,0)
-           to[lowpass] ++(6,0)
+           to[dac,n=nda] ++(6,0)
+           to[lowpass,n=nlp] ++(6,0)
            to[short,-o] ++(0.2,0) node[above]{$V_{out}$};
 
         \path[name path=labels]
@@ -110,16 +113,16 @@
         ++(0,-4) node[draw,below]{SNDR} ++(0, -3) node[align=center]{signal to noise \\ and distortion ratio};
 
         \draw[name path=cd,dashed] (9.2,-6) node[above,rotate=90]{continuous} node[below,rotate=90]{discrete}
-        -- (9.2,6) node{};
+        -- (nsh.south) (nsh.north) -- (9.2,6) node{};
 
         \draw[name path=ad,dashed] (15.2,-6) node[above,rotate=90]{analog} node[below,rotate=90]{digital}
-        -- (15.2,6) node{};
+        -- (nad.south) (nad.north) -- (15.2,6) node{};
 
         \draw[name path=da,dashed] (27.2,-6) node[above,rotate=90]{digital} node[below,rotate=90]{analog}
-        -- (27.2,6) node{};
+        -- (nda.south) (nda.north) -- (27.2,6) node{};
 
-        \draw[name path=dc,dashed] (33.2,-6) node[above,rotate=90]{discrete} node[below,rotate=90]{continuous}
-        -- (33.2,6) node{};
+        \draw[name path=lp,dashed] (33.2,-6) node[above,rotate=90]{discrete} node[below,rotate=90]{continuous}
+        -- (nlp.south) (nlp.north) -- (33.2,6) node{};
 
         \end{circuitikz}
     \end{center}
@@ -150,12 +153,12 @@ The quantizer-error is defined with equation \ref{eq:quantizer_err}.
 It is assumed that the error behaves like white noise\footnote{White noise means that the noise has the same amplitude for every frequency.} because the digital signal is a sequence of pulses. If this is fourier transformed a constant spectral density is received.
 
 \begin{figure}[H]
-    \centering
-    \begin{minipage}{0.5\columnwidth}
+    \begin{align*}
         \centering
-        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)=(\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+        \begin{tikzpicture}[baseline,declare function={unipdf(\x,\xl,\xu)=(\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
             \begin{axis}[
-                width=\textwidth,
+                anchor=center,
+                width=0.5\linewidth,
                 samples=100,
                 const plot mark mid,
                 scaled ticks = false,
@@ -166,14 +169,9 @@ It is assumed that the error behaves like white noise\footnote{White noise means
                 \addplot [very thick, orange] {unipdf(x,-5,5)};
             \end{axis}
         \end{tikzpicture}
-    \end{minipage}%
-    \begin{minipage}{0.2\columnwidth}
-        $\overset{\mathcal{F}}{\Laplace}$
-    \end{minipage}
-    \begin{minipage}{0.29\columnwidth}
-        $\delta(t)$
-    \end{minipage}
-    spectral density $\overset{\mathcal{F}}{\Laplace}$ autocorrelation function
+        \text{ }&\overset{\mathcal{F}}{\Laplace}\text{ }\delta(t) \\
+        \text{spectral density }&\overset{\mathcal{F}}{\Laplace}\text{ autocorrelation function}
+    \end{align*}
 \end{figure}
 
 Since the quantizer error has the probability density function of white noise, it can be depicted with the function seen in \ref{fig:prob_dens_func_quantizer}.
@@ -207,20 +205,20 @@ With the knowledge of the fact that the variance equals the RMS\footnote{root me
     \label{eq:rms_variance}
 \end{equation}
 
-\begin{eqnarray}
+\begin{align}
     \sigma_e^2 &= \int_{-\infty}^{+\infty}V_e^2\rho(V_e)dV_e \\
     &= \int_{-\frac{LSB}{2}}^{+\frac{LSB}{2}}\frac{V_e^2}{LSB}dV_e \\
     &= \frac{1}{LSB}\frac{1}{3}V_e^3\Big|_{-\frac{LSB}{2}}^{+\frac{LSB}{2}} \\
     &= \frac{LSB^2}{12} = \frac{1}{12}V_{ref}^22^{-2N}
     \label{eq:variance_quantizer_err}
-\end{eqnarray}
+\end{align}
 
-\begin{eqnarray}
+\begin{align}
     SNR &= \frac{V_{sig, rms}^2}{V_{n, rms}^2} \\
     &= \frac{\Big(\frac{V_ref}{2}\frac{1}{\sqrt{2}}\Big)^2}{\frac{1}{12}V_{ref}^22^{-2N}} \\
     &= N\cdot 6.02dB + 1.76dB
     \label{eq:snr_base}
-\end{eqnarray}
+\end{align}
 
 Using this equation a statement about the ENOB\footnote{effective number of bits} can be made, having a look at the SNR equation optained. This is given in \ref{eq:neff}.
 
@@ -235,7 +233,9 @@ Using this equation a statement about the ENOB\footnote{effective number of bits
     \centering
     \begin{tikzpicture}[declare function={unipdf(\x,\m,\q)=(\m*\x+\q);},x=0.021\linewidth,y=0.021\linewidth]
         \begin{axis}[
-            samples=1000,
+            height=6cm,
+            width=0.7\columnwidth,
+            samples=8,
             const plot mark mid,
             scaled ticks = false,
             ymin=0,ymax=10,
@@ -246,7 +246,7 @@ Using this equation a statement about the ENOB\footnote{effective number of bits
             ytick={0,1,2,3,4,5,6,7,8,9,10},
             yticklabels={,,,,,,,,$V_{ref}$},
             ylabel={$V_o$}]
-            \addplot [very thick, orange] {unipdf(x,0.8,0)};
+            \addplot [scatter,only marks,draw=orange][domain=0:7]{unipdf(x,1,0)};
         \end{axis}
     \end{tikzpicture}
     \caption{Output of a DAC and possible errors}
