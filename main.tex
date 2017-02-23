@@ -16,6 +16,7 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.13}
 \usepackage{graphicx}
+\usepackage{trfsigns}
 
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
             \node[shape=circle,draw,inner sep=2pt] (char) {#1};}}
@@ -146,7 +147,36 @@ The quantizer-error is defined with equation \ref{eq:quantizer_err}.
     \label{eq:quantizer_err}
 \end{equation}
 
-Since the quantizer error has the probability density function of white noise\footnote{White noise means that the noise has the same amplitude for every frequency.}, it can be depicted with the function seen in \ref{fig:prob_dens_func_quantizer}.
+It is assumed that the error behaves like white noise\footnote{White noise means that the noise has the same amplitude for every frequency.} because the digital signal is a sequence of pulses. If this is fourier transformed a constant spectral density is received.
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}{0.5\columnwidth}
+        \centering
+        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)=(\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+            \begin{axis}[
+                width=\textwidth,
+                samples=100,
+                const plot mark mid,
+                scaled ticks = false,
+                ymin=0,ymax=0.5,
+                xmin=-3,xmax=3,
+                xtick={0},
+                ytick={0}]
+                \addplot [very thick, orange] {unipdf(x,-5,5)};
+            \end{axis}
+        \end{tikzpicture}
+    \end{minipage}%
+    \begin{minipage}{0.2\columnwidth}
+        $\overset{\mathcal{F}}{\Laplace}$
+    \end{minipage}
+    \begin{minipage}{0.29\columnwidth}
+        $\delta(t)$
+    \end{minipage}
+    spectral density $\overset{\mathcal{F}}{\Laplace}$ autocorrelation function
+\end{figure}
+
+Since the quantizer error has the probability density function of white noise, it can be depicted with the function seen in \ref{fig:prob_dens_func_quantizer}.
 
 \begin{figure}[H]
     \centering
@@ -170,53 +200,59 @@ Since the quantizer error has the probability density function of white noise\fo
     \label{fig:prob_dens_func_quantizer}
 \end{figure}
 
-The white noise is assumed because the digital signal is a sequence of pulses. If this is fouriertransformed a constant spectral density is received.
+With the knowledge of the fact that the variance equals the RMS\footnote{root mean square} value, depicted in equation \ref{eq:rms_variance} and thus \ref{eq:variance_quantizer_err}, we can now find the SNR\footnote{signal to noise ratio} value with solving equation \ref{eq:snr_base}
+
+\begin{equation}
+    (rms)^2 = \sigma,\text{ $\sigma$ is the standard deviation}
+    \label{eq:rms_variance}
+\end{equation}
+
+\begin{eqnarray}
+    \sigma_e^2 &= \int_{-\infty}^{+\infty}V_e^2\rho(V_e)dV_e \\
+    &= \int_{-\frac{LSB}{2}}^{+\frac{LSB}{2}}\frac{V_e^2}{LSB}dV_e \\
+    &= \frac{1}{LSB}\frac{1}{3}V_e^3\Big|_{-\frac{LSB}{2}}^{+\frac{LSB}{2}} \\
+    &= \frac{LSB^2}{12} = \frac{1}{12}V_{ref}^22^{-2N}
+    \label{eq:variance_quantizer_err}
+\end{eqnarray}
+
+\begin{eqnarray}
+    SNR &= \frac{V_{sig, rms}^2}{V_{n, rms}^2} \\
+    &= \frac{\Big(\frac{V_ref}{2}\frac{1}{\sqrt{2}}\Big)^2}{\frac{1}{12}V_{ref}^22^{-2N}} \\
+    &= N\cdot 6.02dB + 1.76dB
+    \label{eq:snr_base}
+\end{eqnarray}
+
+Using this equation a statement about the ENOB\footnote{effective number of bits} can be made, having a look at the SNR equation optained. This is given in \ref{eq:neff}.
+
+\begin{equation}
+    N_{eff} = ENOB = \frac{SNDR - 1.76dB}{6.02dB}
+    \label{eq:neff}
+\end{equation}
+
+\subsubsection[chain2DA]{\circled{2} D/A}
 
 \begin{figure}[H]
     \centering
-    \fbox{
-    \begin{minipage}{0.5\columnwidth}
-        \centering
-        \fbox{\begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
-            \begin{axis}[
-                samples=100,
-                const plot mark mid,
-                scaled ticks = false,
-                ymin=0,ymax=0.5,
-                xmin=-3,xmax=3,
-                xtick={0},
-                ytick={0}]
-                \addplot [very thick, orange] {unipdf(x,-5,5)};
-            \end{axis}
-        \end{tikzpicture}}
-        \caption{$dt=0.1$}
-        \label{fig:prob1_6_2}
-    \end{minipage}%
-    }
-    \fbox{
-    \begin{minipage}{0.5\columnwidth}
-        \centering
-        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);},scale=0.8]
-            \begin{axis}[
-                samples=100,
-                const plot mark mid,
-                scaled ticks = false,
-                ymin=0,ymax=0.5,
-                xmin=-3,xmax=3,
-                xtick={-2,2},
-                xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$}],
-                ytick={0.25},
-                yticklabels={$\frac{1}{LSB}$}]
-                \addplot [very thick, orange] {unipdf(x,-2,2)};
-            \end{axis}
-        \end{tikzpicture}
-        \caption{$dt =$}
-        \label{fig:prob1_6_1}
-    \end{minipage}
-    }
+    \begin{tikzpicture}[declare function={unipdf(\x,\m,\q)=(\m*\x+\q);},x=0.021\linewidth,y=0.021\linewidth]
+        \begin{axis}[
+            samples=1000,
+            const plot mark mid,
+            scaled ticks = false,
+            ymin=0,ymax=10,
+            xmin=0,xmax=10,
+            xtick={0,1,2,3,4,5,6,7,8},
+            xticklabels={000,001,010,011,100,101,110,111},
+            xlabel={$B_1$},
+            ytick={0,1,2,3,4,5,6,7,8,9,10},
+            yticklabels={,,,,,,,,$V_{ref}$},
+            ylabel={$V_o$}]
+            \addplot [very thick, orange] {unipdf(x,0.8,0)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Output of a DAC and possible errors}
+    \label{fig:dac_error_types}
 \end{figure}
 
-\subsubsection[chain2DA]{\circled{2} D/A}
 \subsubsection[chain3AD]{\circled{3} A/D}
 \subsubsection[chain4SH]{\circled{4} S\&H}
 \subsubsection[chain56LP]{\circled{5}\circled{6} LP}
