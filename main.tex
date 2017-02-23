@@ -150,17 +150,19 @@ Since the quantizer error has the probability density function of white noise\fo
 
 \begin{figure}[H]
     \centering
-    \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+    \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);},x=0.021\linewidth,y=0.021\linewidth]
         \begin{axis}[
             samples=100,
             const plot mark mid,
             scaled ticks = false,
             ymin=0,ymax=0.5,
             xmin=-3,xmax=3,
-            xtick={-2,2},
-            xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$},
+            xtick={-2,0,2},
+            xticklabels={-$\frac{LSB}{2}$,0,$\frac{LSB}{2}$},
+            xlabel={$V_e$},
             ytick={0.25},
-            yticklabels={$\frac{1}{LSB}$}]
+            yticklabels={$\frac{1}{LSB}$},
+            ylabel={$\rho(V_e)$}]
             \addplot [very thick, orange] {unipdf(x,-2,2)};
         \end{axis}
     \end{tikzpicture}
@@ -170,30 +172,31 @@ Since the quantizer error has the probability density function of white noise\fo
 
 The white noise is assumed because the digital signal is a sequence of pulses. If this is fouriertransformed a constant spectral density is received.
 
-\begin{figure}[!htb]
+\begin{figure}[H]
     \centering
-    \begin{minipage}{.5\textwidth}
+    \fbox{
+    \begin{minipage}{0.5\columnwidth}
         \centering
-        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+        \fbox{\begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
             \begin{axis}[
                 samples=100,
                 const plot mark mid,
                 scaled ticks = false,
                 ymin=0,ymax=0.5,
                 xmin=-3,xmax=3,
-                xtick={-2,2},
-                xticklabels={-$\frac{LSB}{2}$,$\frac{LSB}{2}$}],
-                ytick={0.25},
-                yticklabels={$\frac{1}{LSB}$}]
-                \addplot [very thick, orange] {unipdf(x,-2,2)};
+                xtick={0},
+                ytick={0}]
+                \addplot [very thick, orange] {unipdf(x,-5,5)};
             \end{axis}
-        \end{tikzpicture}
+        \end{tikzpicture}}
         \caption{$dt=0.1$}
         \label{fig:prob1_6_2}
     \end{minipage}%
-    \begin{minipage}{0.5\textwidth}
+    }
+    \fbox{
+    \begin{minipage}{0.5\columnwidth}
         \centering
-        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);}]
+        \begin{tikzpicture}[declare function={unipdf(\x,\xl,\xu)= (\x>\xl)*(\x<\xu)*1/(\xu-\xl);},scale=0.8]
             \begin{axis}[
                 samples=100,
                 const plot mark mid,
@@ -210,6 +213,7 @@ The white noise is assumed because the digital signal is a sequence of pulses. I
         \caption{$dt =$}
         \label{fig:prob1_6_1}
     \end{minipage}
+    }
 \end{figure}
 
 \subsubsection[chain2DA]{\circled{2} D/A}
