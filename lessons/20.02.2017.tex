@@ -82,7 +82,7 @@ It is assumed that the error behaves like white noise\footnote{White noise means
                 xmin=-3,xmax=3,
                 xtick={0},
                 ytick={0}]
-                \addplot [very thick, orange] {unipdf(x,-5,5)};
+                \addplot [orange] {unipdf(x,-5,5)};
             \end{axis}
         \end{tikzpicture}
         \text{ }&\overset{\mathcal{F}}{\Laplace}\text{ }\delta(t) \\
@@ -107,7 +107,7 @@ Since the quantizer error has the probability density function of white noise, i
             ytick={0.25},
             yticklabels={$\frac{1}{LSB}$},
             ylabel={$\rho(V_e)$}]
-            \addplot [very thick, orange] {unipdf(x,-2,2)};
+            \addplot [orange] {unipdf(x,-2,2)};
         \end{axis}
     \end{tikzpicture}
     \caption{Probability density function of the quatizer error}
@@ -151,7 +151,7 @@ Using this equation a statement about the ENOB\footnote{effective number of bits
         \begin{axis}[
             height=6cm,
             width=0.7\columnwidth,
-            samples=8,
+            samples=300,
             const plot mark mid,
             scaled ticks = false,
             ymin=0,ymax=10,
@@ -162,12 +162,60 @@ Using this equation a statement about the ENOB\footnote{effective number of bits
             ytick={0,1,2,3,4,5,6,7,8,9,10},
             yticklabels={,,,,,,,,$V_{ref}$},
             ylabel={$V_o$}]
-            \addplot [scatter,only marks,draw=orange][domain=0:7]{unipdf(x,1,0)};
+            \addplot [orange][domain=0:7]{unipdf(x,1,0)} node[left,pos=1,pin=35:{$V_{soll}$}] {};
+            \addplot [dashed,red][domain=0:7]{unipdf(x,1,1)} node[above,pos=0.7,pin=135:{offset}] {};
+            \addplot [dashed,purple][domain=0:7]{unipdf(x,0.5,0)} node[below,pos=1,pin=-45:{gain error}] {};
+            \addplot [dashed,blue][domain=0:7]{(0-2*4.5+7)*x*x/7/7+(-2*0+2*4.5)*x/7} node[above,pos=0.55,pin=135:{nonlinearity}] {};
         \end{axis}
     \end{tikzpicture}
     \caption{Output of a DAC and possible errors}
     \label{fig:dac_error_types}
 \end{figure}
+
+There is two kinds of nonlinearities:
+
+\begin{itemize}
+    \item INL: integral nonlinearity: $V_{soll}-V_{ist}$ \\
+    \item DNL: differential nonlinearity: $\Delta V_{soll}-\Delta V_{ist}$ \\
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{center}
+        \tikzset{font={\fontsize{8pt}{12}\selectfont}}
+        \begin{circuitikz}[x=0.021\linewidth,y=0.021\linewidth]
+
+        \draw[name path=resistorladder]
+           (0,0) node[above]{$V_{in}$} to[short,o-] ++(0, -1)
+           to[R=R] ++(0,-6) ++(-3,0) node[left]{11} ++(3,0) to[short,-o] ++(12,0) ++(-12,0)
+           to[R=R] ++(0,-6) ++(-3,0) node[left]{10} ++(3,0) to[short,-o] ++(9,0) node[right]{$\frac{2R+\Delta R}{4R+\Delta R}$} ++(-9,0)
+           to[R=R] ++(0,-6) ++(-3,0) node[left]{01} ++(3,0) to[short,-o] ++(6,0) node[right]{$\frac{R+\Delta R}{4R+\Delta R}$} ++(-6,0)
+           to[R=R] ++(0,-6) ++(-3,0) node[left]{00} ++(3,0) to[short,-o] ++(3,0) ++(-3,0)
+           to ++(0,-1) node[rground]{};
+
+        \draw[dashed]
+           (0,0) ++(0, -1)
+           ++(0,-6) -- ++(-3,0) ++(3,0)
+           ++(0,-6) -- ++(-3,0) ++(3,0)
+           ++(0,-6) -- ++(-3,0) ++(3,0)
+           ++(0,-6) -- ++(-3,0);
+
+        \end{circuitikz}
+    \end{center}
+    \caption{Resistor ladder to implement a dac}
+    \label{fig:resistor_ladder}
+\end{figure}
+
+In figure \ref{fig:resistor_ladder} the DNL can be calculated as given in equation \ref{eq:dnl}.
+
+\begin{align}
+    \Delta V_{ist} &= \frac{R+\Delta R}{2^NR+\Delta R} \\
+    \Delta V_{soll} &= \frac{R}{2^NR} \\
+    \frac{\Delta R}{2^NR}V_{ref} &= \frac{\Delta R}{R}[LSB]
+    \label{eq:dnl}
+\end{align}
+
+A DAC has monotone behavior if $DNL \in [-1,1]$, which means that a higher $B_1$ always results in a higher $V_o$.
+If a DAC has "no missing codes" guaranteed, all digital values result in a different $V_o$. So no digital value will ever be skipped.
 
 \subsubsection[chain3AD]{\circled{3} A/D}
 \subsubsection[chain4SH]{\circled{4} S\&H}
